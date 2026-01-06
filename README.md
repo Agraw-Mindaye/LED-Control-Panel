@@ -2,66 +2,63 @@
 
 ## Overview
 
-This project wraps up **Phase 1** of my Embedded Systems learning roadmap. 
-It demonstrates basic microcontroller skills using an Arduino Mega 2560: digital 
-and analog I/O, PWM, interrupts, and serial communication.
+The **Interactive LED Control Panel** is an embedded firmware project built on the Arduino Mega 2560 that demonstrates core microcontroller concepts including digital and analog I/O, PWM, interrupts, non-blocking timing, and state-based control logic.
+
+The system uses a push button (interrupt-driven) to switch between operating modes, while a potentiometer provides continuous analog control over LED behavior. This project focuses on deterministic input handling and responsive firmware design.
 
 ## Hardware Used
 
-| Component        | Description                      |
-|------------------|----------------------------------|
-| Arduino Mega 2560 | Main microcontroller board       |
-| Push button       | Mode switch |
-| Potentiometer     | Analog input control             |
-| RGB LED           | Output device (red was used in this project) |
-| Resistors (220Ω)  | For LED current limiting         |
-| Breadboard + jumpers | Standard prototyping setup     |
+| Component            | Description                       |
+| -------------------- | --------------------------------- |
+| Arduino Mega 2560    | Main microcontroller              |
+| Push button          | Mode switching (interrupt-driven) |
+| Potentiometer        | Analog input control              |
+| RGB LED              | Output device (red channel used)  |
+| 220Ω resistors       | LED current limiting              |
+| Breadboard & jumpers | Prototyping setup                 |
+
 
 ## Circuit Connections
 
 | Component    | Arduino Pin |
 |--------------|-------------|
-| Button       | 2 (interrupt-capable) |
+| Button       | Pin 2 (interrupt-capable) |
 | Potentiometer | A0          |
-| RGB Red      | 9 (PWM)      |
-| RGB Green    | 10 (PWM, unused) |
-| RGB Blue     | 11 (PWM, unused) |
+| RGB Red      | Pin 9 (PWM)      |
+| RGB Green    | Pin 10 (PWM, unused) |
+| RGB Blue     | Pin 11 (PWM, unused) |
 
-## 📝 Code Sample
+## Firmware Architecture
 
-```cpp
-    switch (mode) {
-    case 0: blinkMode(potValue); break;
-    case 1: brightnessMode(potValue); break;
-    case 2: colorMode(potValue); break;
-  }
-```
+* Structured around a mode-based state machine
+* Each mode defines a distinct LED behavior
+* A hardware interrupt is used to switch between modes
+* Ensures immediate responsiveness without blocking the main execution loop
 
-## 📝 Serial Monitor Output Sample
+## Operating Modes
 
-```cpp
-    [Mode 0: Blink] Pot: 142 | Interval: 224ms | LED: ON
-        Switched to Mode 1
-    [Mode 1: Brightness] Pot: 0 | Brightness: 0
-        Switched to Mode 2
-    [Mode 2: Color Red] Pot: 826 | Red Intensity: 205
-```     
+### Mode 0 - Blink Control
 
-## How It Works
+* Potentiometer controls LED blink interval
+* Interval range: 100 ms – 1000 ms
+* Timing implemented using millis() (non-blocking)
 
-1. Pressing the button triggers an interrupt to switch modes.
-2. In each mode, the potentiometer value is read and mapped:
-   - **Mode 0**: Blinks the LED at speeds between 100ms–1000ms
-   - **Mode 1**: Adjusts LED brightness via PWM
-   - **Mode 2**: Sets red intensity for RGB LED
-3. All states are printed over Serial for easy monitoring.
+### Mode 1 - Blink Control
 
-## Lessons Learned
+* Potentiometer maps directly to PWM duty cycle
+* LED brightness adjusted smoothly via hardware PWM
 
-- How to use attachInterrupt() to respond to button presses.
-- What an ISR (Interrupt Service Routine) is and how it works.
-- Why volatile is necessary for variables shared with an ISR.
-- How to debounce a button manually using millis().
-- How to use millis() instead of delay() for non-blocking timing.
-- How to map analog values with map() to control timing, brightness, or color.
-- How to use the serial monitor (arduino-cli monitor) to debug behavior in real time.
+### Mode 2 - Blink Control
+
+* Potentiometer controls red channel intensity of RGB LED
+* Demonstrates analog-to-PWM mapping fgor output control
+
+
+## Key Concepts
+
+* Interrupt-driven input handling
+* Non-blocking timing using millis()
+* Analog-to-digital input processing
+* PWM-based output control
+* State-based firmware design
+* Safe ISR communication using volatile
