@@ -51,7 +51,7 @@ The system uses a push button (interrupt-driven) to switch between operating mod
 ### Mode 2 - Blink Control
 
 * Potentiometer controls red channel intensity of RGB LED
-* Demonstrates analog-to-PWM mapping foor output control
+* Demonstrates analog-to-PWM mapping for output control
 
 
 ## Key Concepts
