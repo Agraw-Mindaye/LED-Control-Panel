@@ -1,64 +1,87 @@
-# Interactive LED Control Panel
+# LED Control Panel
+
+Arduino Mega 2560 firmware project demonstrating interrupt-driven input handling, non-blocking timing, PWM output control, and state-machine-based behavior.
 
 ## Overview
 
-The **Interactive LED Control Panel** is an embedded firmware project built on the Arduino Mega 2560 that demonstrates core microcontroller concepts including digital and analog I/O, PWM, interrupts, non-blocking timing, and state-based control logic.
+This project implements an interactive LED control system using an Arduino Mega 2560, a push button, a potentiometer, and an RGB LED. The firmware is designed to demonstrate core embedded systems concepts including digital and analog I/O, hardware interrupts, PWM control, and mode-based state logic.
 
-The system uses a push button (interrupt-driven) to switch between operating modes, while a potentiometer provides continuous analog control over LED behavior. This project focuses on deterministic input handling and responsive firmware design.
+The system uses a push button to switch between operating modes, while a potentiometer provides real-time control over LED behavior. The firmware emphasizes deterministic input handling, non-blocking execution, and clean separation between state management and hardware behavior.
 
 ## Hardware Used
 
-| Component            | Description                       |
-| -------------------- | --------------------------------- |
-| Arduino Mega 2560    | Main microcontroller              |
-| Push button          | Mode switching (interrupt-driven) |
-| Potentiometer        | Analog input control              |
-| RGB LED              | Output device (red channel used)  |
-| 220Ω resistors       | LED current limiting              |
-| Breadboard & jumpers | Prototyping setup                 |
-
+- Arduino Mega 2560
+- Push button
+- Potentiometer
+- RGB LED
+- 220Ω resistors
+- Breadboard and jumper wires
 
 ## Circuit Connections
 
-| Component    | Arduino Pin |
-|--------------|-------------|
-| Button       | Pin 2 (interrupt-capable) |
-| Potentiometer | A0          |
-| RGB Red      | Pin 9 (PWM)      |
-| RGB Green    | Pin 10 (PWM, unused) |
-| RGB Blue     | Pin 11 (PWM, unused) |
+| Component | Arduino Pin |
+|---|---|
+| Button | Pin 2 (interrupt-capable) |
+| Potentiometer | A0 |
+| RGB Red Pin | 9 (PWM) |
+| RGB Green Pin | 10 (PWM, unused) |
+| RGB Blue Pin | 11 (PWM, unused) |
 
 ## Firmware Architecture
 
-* Structured around a mode-based state machine
-* Each mode defines a distinct LED behavior
-* A hardware interrupt is used to switch between modes
-* Ensures immediate responsiveness without blocking the main execution loop
+- Mode-based state machine for LED behavior
+- Interrupt-driven mode switching
+- Main loop handles analog input and LED updates
+- Non-blocking timing using `millis()`
+- ISR-safe communication using `volatile`
 
 ## Operating Modes
 
-### Mode 0 - Blink Control
+### Mode 0 – Blink Interval Control
+- Potentiometer controls LED blink interval
+- Interval range: 100 ms to 1000 ms
+- Timing implemented using `millis()`
 
-* Potentiometer controls LED blink interval
-* Interval range: 100 ms – 1000 ms
-* Timing implemented using millis() (non-blocking)
+### Mode 1 – PWM Brightness Control
+- Potentiometer maps directly to PWM duty cycle
+- LED brightness adjusts continuously
 
-### Mode 1 - Blink Control
+### Mode 2 – Analog Output Mapping
+- Potentiometer controls red channel intensity of the RGB LED
+- Demonstrates analog-to-PWM mapping
 
-* Potentiometer maps directly to PWM duty cycle
-* LED brightness adjusted smoothly via hardware PWM
+## System Behavior
 
-### Mode 2 - Blink Control
+The firmware uses an interrupt-driven input model for mode switching, while the main loop handles analog sampling and LED updates without blocking execution.
 
-* Potentiometer controls red channel intensity of RGB LED
-* Demonstrates analog-to-PWM mapping for output control
+- Button presses trigger mode changes through ISR-safe flag updates
+- Potentiometer input is sampled continuously in the main loop
+- LED behavior changes based on the active state
+- Timing-sensitive behavior is handled without blocking delays
 
+This structure keeps the system responsive while separating asynchronous events from deterministic application behavior.
 
-## Key Concepts
+## Key Embedded Concepts
 
-* Interrupt-driven input handling
-* Non-blocking timing using millis()
-* Analog-to-digital input processing
-* PWM-based output control
-* State-based firmware design
-* Safe ISR communication using volatile
+- Interrupt-driven input handling
+- ISR-safe communication using `volatile`
+- Non-blocking timing with `millis()`
+- Analog input processing
+- PWM-based output control
+- Mode-based state machine design
+- Separation of hardware logic and application behavior
+
+## Repository Structure
+
+```text
+include/   header files
+lib/       reusable modules
+src/       application source
+test/      test scaffolding
+platformio.ini
+```
+## Future Improvements
+- Add configurable software debouncing
+- Expand support for full RGB channel control
+- Add threshold-based actuator behavior from sensor inputs
+- Extend the mode logic into a more formal finite-state machine
